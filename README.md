@@ -1,8 +1,8 @@
-# CentOS with SSH Docker Image #
+# CentOS with SSH #
 
 ## Overview ##
 
-A base image tailored for ClusterControl usage. It automatically configures passwordless SSH from ClusterControl container during startup, allowing ClusterControl to control/manage/deploy database instances seamlessly.
+A base Docker image tailored for ClusterControl usage. It automatically configures passwordless SSH from ClusterControl container during startup, allowing ClusterControl to automate/control/manage/deploy database instances seamlessly.
 
 ## Image Description ##
 
@@ -91,11 +91,13 @@ $ docker build --rm -t severalnines/centos-ssh .
 Only Galera cluster is supported in automatic deployment at the moment. We are going to support more clusters in the near future. The following shows how we can deploy a Galera Cluster automatically, which means you only need to execute the 'docker run' commands and wait until the deployment completes.
 
 1) Run the ClusterControl container:
+
 ```bash
 docker run -d --name clustercontrol -p 5000:80 severalnines/clustercontrol
 ```
 
 2) Run the DB containers (`CC_HOST` is the ClusterControl container's IP):
+
 ```bash
 # find the ClusterControl container's IP address
 CC_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' clustercontrol)
@@ -105,6 +107,7 @@ docker run -d --name galera3 -p 6663:3306 -e CC_HOST=${CC_IP} -e CLUSTER_TYPE=ga
 ```
 
 Container linking is also supported (assume the ClusterControl container name is 'clustercontrol'):
+
 ```bash
 docker run -d --name galera1 -p 6661:3306 --link clustercontrol:clustercontrol -e CLUSTER_TYPE=galera -e CLUSTER_NAME=mygalera -e INITIAL_CLUSTER_SIZE=3 severalnines/centos-ssh
 docker run -d --name galera2 -p 6662:3306 --link clustercontrol:clustercontrol -e CLUSTER_TYPE=galera -e CLUSTER_NAME=mygalera -e INITIAL_CLUSTER_SIZE=3 severalnines/centos-ssh
@@ -127,6 +130,7 @@ docker run -d --name galera5 -p 6665:3306 --link clustercontrol:clustercontrol -
 Manual deployment allows user to have better control on the deployment process initiates by ClusterControl. All supported database cluster can be deployed using this method. The following shows deployment of 4-node MySQL Replication (1 master + 3 slaves) with 1-node ProxySQL instance on a standalone Docker.
 
 1) Run the ClusterControl container:
+
 ```bash
 docker run -d --name clustercontrol -p 5000:80 severalnines/clustercontrol
 ```
